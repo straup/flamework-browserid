@@ -1,0 +1,51 @@
+{capture assign="extra_head"}
+<script type="text/javascript" src="{$cfg.abs_root_url}javascript/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="{$cfg.abs_root_url}javascript/browserid.include.js"></script>
+{/capture}
+{include file="inc_head.txt"}
+
+<button id="signin" data-crumb={$crumb|escape}">signin</button>
+
+<script type="text/javascript">
+
+var _cfg = {literal}{{/literal}
+    'abs_root_url' : '{$cfg.abs_root_url}'
+{literal}}{/literal};
+
+{literal}
+
+$(document).ready(function(){
+
+	$("#signin").click(function(){
+
+		$("#signin").attr("disabled", "disabled");
+
+		navigator.id.get(function(assertion){
+
+			if (! assertion){
+				return;
+			}
+
+			var crumb = $("#signin").attr("data-cumb");
+
+			$.ajax({
+				'url': _cfg['abs_root_url'] + 'signin_browserid_verify.php',
+				'type': 'POST',
+				'data': { 'assertion': assertion, 'crumb': crumb },
+				'success': function(rsp){
+					/* technically we should only ever get
+					   here if there's been an error... */
+				}
+			});
+
+		});
+
+	});
+
+	$("#signin").removeAttr("disabled");
+});
+
+{/literal}
+</script>
+
+{include file="inc_foot.txt"}
